@@ -10,8 +10,7 @@
 #include <GLES3/gl3.h>
 #endif
 #include <EGL/egl.h>
-#include "nanovg.h"
-#include "nanovg_gl.h"
+#include "NanoVG_GL.h"
 #include <algorithm>
 #ifdef __ANDROID__
 #include <pthread.h>

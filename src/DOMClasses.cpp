@@ -232,6 +232,7 @@ WindowClass::~WindowClass()
 void WindowClass::initJsFields(JSContext* ctx, JSValue global)
 {
     NodeClass::initJsFields(ctx, global);
+    JS_SetPropertyStr(ctx, global, "window", JS_DupValue(ctx, global));
     JS_SetPropertyStr(ctx, global, "dispatchEvent",
                       JS_NewCFunction(ctx, js_dispatchEvent, "dispatchEvent", 3));
     JS_SetPropertyStr(ctx, global, "__createStyle",

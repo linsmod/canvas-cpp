@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include <nanovg.h>
+#include "NanoVG_GL.h"
 
 #include "Bindings.h"
 #include "Color.h"

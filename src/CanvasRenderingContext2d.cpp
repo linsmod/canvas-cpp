@@ -1,6 +1,5 @@
 #include "Context.h"
 #include "Bindings.h"
-#include "Canvas.h"
 #include "Perf.h"
 #include "quickjs.h"
 #include <cstdio>
@@ -1269,7 +1268,7 @@ std::vector<CanvasRenderingContext2d::CachedGL> CanvasRenderingContext2d::s_glCa
 
        // Compute dirty region bounds for incremental blit
        int dX, dY, dW, dH;
-       m_tiledCanvas.getDirtyBounds(dX, dY, dW, dH);
+       m_tiledCanvas.getDirtyBounds(&dX, &dY, &dW, &dH);
        // Clamp dirty region to source rect
        if (dX < srcX) { dW -= srcX - dX; dX = srcX; }
        if (dY < srcY) { dH -= srcY - dY; dY = srcY; }

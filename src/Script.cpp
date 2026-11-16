@@ -42,6 +42,47 @@ namespace canvas
 {
    static int started = 0;
 
+   static JSValue js_setTimeout(JSContext* ctx, JSValueConst, int argc, JSValueConst* argv)
+   {
+      auto* script = contextOpaque<Script>(ctx);
+      if (!script || argc < 1) return JS_UNDEFINED;
+      int delay = 0;
+      if (argc > 1) JS_ToInt32(ctx, &delay, argv[1]);
+      return JS_NewInt32(ctx, script->setTimeout(argv[0], delay));
+   }
+
+   static JSValue js_setInterval(JSContext* ctx, JSValueConst, int argc, JSValueConst* argv)
+   {
+      auto* script = contextOpaque<Script>(ctx);
+      if (!script || argc < 1) return JS_UNDEFINED;
+      int interval = 0;
+      if (argc > 1) JS_ToInt32(ctx, &interval, argv[1]);
+      return JS_NewInt32(ctx, script->setInterval(argv[0], interval));
+   }
+
+   static JSValue js_clearTimeout(JSContext* ctx, JSValueConst, int argc, JSValueConst* argv)
+   {
+      auto* script = contextOpaque<Script>(ctx);
+      int id = 0;
+      if (script && argc > 0 && JS_ToInt32(ctx, &id, argv[0]) == 0) script->clearTimeout(id);
+      return JS_UNDEFINED;
+   }
+
+   static JSValue js_requestAnimationFrame(JSContext* ctx, JSValueConst, int argc, JSValueConst* argv)
+   {
+      auto* script = contextOpaque<Script>(ctx);
+      if (!script || argc < 1) return JS_UNDEFINED;
+      return JS_NewInt32(ctx, script->requestAnimationFrame(argv[0]));
+   }
+
+   static JSValue js_cancelAnimationFrame(JSContext* ctx, JSValueConst, int argc, JSValueConst* argv)
+   {
+      auto* script = contextOpaque<Script>(ctx);
+      int id = 0;
+      if (script && argc > 0 && JS_ToInt32(ctx, &id, argv[0]) == 0) script->cancelAnimationFrame(id);
+      return JS_UNDEFINED;
+   }
+
    Script::Script(JSContext * context)
       : m_context(context),
         m_runtime(JS_GetRuntime(context)),
@@ -58,11 +99,22 @@ namespace canvas
 
       auto global = JS_GetGlobalObject(context);
       JS_SetContextOpaque(context, this);
-      JS_SetOpaque(global, m_window);
+      JS_SetPropertyStr(context, global, "setTimeout",
+                        JS_NewCFunction(context, js_setTimeout, "setTimeout", 2));
+      JS_SetPropertyStr(context, global, "setInterval",
+                        JS_NewCFunction(context, js_setInterval, "setInterval", 2));
+      JS_SetPropertyStr(context, global, "clearTimeout",
+                        JS_NewCFunction(context, js_clearTimeout, "clearTimeout", 1));
+      JS_SetPropertyStr(context, global, "clearInterval",
+                        JS_NewCFunction(context, js_clearTimeout, "clearInterval", 1));
+      JS_SetPropertyStr(context, global, "requestAnimationFrame",
+                        JS_NewCFunction(context, js_requestAnimationFrame, "requestAnimationFrame", 1));
+      JS_SetPropertyStr(context, global, "cancelAnimationFrame",
+                        JS_NewCFunction(context, js_cancelAnimationFrame, "cancelAnimationFrame", 1));
       m_window->initJsFields(context, global);
       JS_FreeValue(context, global);
 
-     std::string shimSource(BROWSER_SHIM_JS, BROWSER_SHIM_JS_LEN);
+     std::string shimSource(reinterpret_cast<const char*>(BROWSER_SHIM_JS), BROWSER_SHIM_JS_LEN);
      if (!runString(shimSource, "browser_shim.js")) {
        LOGE("Failed to evaluate browser shim");
        return;

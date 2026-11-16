@@ -52,6 +52,7 @@ set(CANVAS_SOURCES
     src/EventDispatch.cpp
     src/ImageData.cpp
     src/Layout.cpp
+    src/NanoVG_GL.cpp
     src/Orientation.cpp
     src/Perf.cpp
     src/PosixFileSystem.cpp
@@ -86,18 +87,14 @@ set(CANVAS_INCLUDES
 if(ANDROID)
     pkg_check_modules(CAIRO REQUIRED cairo)
     set(GL_LIBRARIES GLESv3 EGL android log)
-    set(NANOVG_GL_SOURCE "${NANOVG_DIR}/src/nanovg_gl.c")
-    set_source_files_properties("${NANOVG_GL_SOURCE}" PROPERTIES COMPILE_DEFINITIONS NANOVG_GLES3)
-    list(APPEND CANVAS_SOURCES src/Canvas.cpp "${NANOVG_GL_SOURCE}")
+    list(APPEND CANVAS_SOURCES src/Canvas.cpp "${NANOVG_DIR}/src/nanovg.c")
     list(APPEND CANVAS_INCLUDES ${CAIRO_INCLUDE_DIRS})
     set(CANVAS_DEFINITIONS NANOVG_GLES3)
 else()
     pkg_check_modules(SDL2 REQUIRED sdl2)
     pkg_check_modules(GL REQUIRED gl)
     pkg_check_modules(CAIRO REQUIRED cairo)
-    set(NANOVG_GL_SOURCE "${NANOVG_DIR}/src/nanovg_gl.c")
-    set_source_files_properties("${NANOVG_GL_SOURCE}" PROPERTIES COMPILE_DEFINITIONS NANOVG_GL3)
-    list(APPEND CANVAS_SOURCES "${NANOVG_DIR}/src/nanovg.c" "${NANOVG_GL_SOURCE}")
+    list(APPEND CANVAS_SOURCES "${NANOVG_DIR}/src/nanovg.c" src/PlatformScreen_SDL2.cpp)
     list(APPEND CANVAS_INCLUDES ${SDL2_INCLUDE_DIRS} ${GL_INCLUDE_DIRS} ${CAIRO_INCLUDE_DIRS})
     set(CANVAS_DEFINITIONS NANOVG_GL3 GL_GLEXT_PROTOTYPES)
     set(PLATFORM_LINK_LIBRARIES ${SDL2_LIBRARIES} ${GL_LIBRARIES} ${CAIRO_LIBRARIES})

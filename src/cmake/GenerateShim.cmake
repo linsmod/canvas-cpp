@@ -7,7 +7,7 @@ string(LENGTH "${_shim_hex}" _hex_length)
 math(EXPR _byte_count "${_hex_length} / 2")
 
 if(_byte_count GREATER 0)
-    string(REGEX REPLACE "(..)" "\\1," _shim_bytes "${_shim_hex}")
+    string(REGEX REPLACE "(..)" "0x\\1," _shim_bytes "${_shim_hex}")
 else()
     set(_shim_bytes "")
 endif()
