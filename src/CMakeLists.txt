@@ -1,0 +1,9 @@
+set(SOURCES
+    Painter.cpp
+    Painter_Bindings.cpp
+    Painter_Callbacks.cpp
+    Painter_Context2D.cpp
+    Painter_Events.cpp
+    Painter_Helpers.cpp
+    Painter_Gradient.cpp
+)
